@@ -13,7 +13,7 @@ local Scuba_Options = {
     },
     Sprite = {
         icon = 729,
-        colour = 12,
+        colour = 43,
         name = 'Angelic UnderSea Group',
     },
     Boat = {

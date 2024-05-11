@@ -11,7 +11,7 @@ local Forklift_Options = {
     },
     Sprite = {
         icon = 473,
-        colour = 12,
+        colour = 43,
         name = 'Angelic Loading Company',
     },
     Forklift = {

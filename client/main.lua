@@ -79,14 +79,17 @@ RegisterNetEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC',function(model, coor
                 local ox_options = {
                     {
                         name = 'CivJobBossWork',
+                        icon = 'fa-solid fa-briefcase',
                         event = eventTrigger,
                         label = Config.Lang['request_work'],
                     }, {
                         name = 'CivJobBossReturn',
+                        icon = 'fa-solid fa-warehouse',
                         event = 'angelicxs-CivilianJobs:MAIN:RemoveVehicle',
                         label = Config.Lang['vehicle_return_request'],
                     }, {
                         name = 'CivJobBossHow',
+                        icon = 'fa-solid fa-comment',
                         event = eventTrigger2,
                         label = Config.Lang['ask_how_to'],
                     }

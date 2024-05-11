@@ -19,7 +19,7 @@ Taxi_Options.Boss = {
 
 Taxi_Options.Sprite = {
     icon = 198,
-    colour = 12,
+    colour = 43,
     name = 'Angelic Taxi Services',
 }
 
@@ -29,7 +29,7 @@ Taxi_Options.Taxi = {
     },
     Spawn = vector4(900.15, -180.67, 73.87, 243.76),
     MinWait = 30, -- Minimum time (in seconds) between calls
-    MaxWait = 90, -- Maximum time (in seconds) between calls
+    MaxWait = 60, -- Maximum time (in seconds) between calls
 
 }
 
@@ -313,9 +313,11 @@ if Config.TaxiJobOn then
             while onRoute do Wait(1000) end
             local seconds = math.random(Taxi_Options.Taxi.MinWait, Taxi_Options.Taxi.MaxWait)
             Wait(seconds*1000)
+            print('taxi')
             while not UsingMissionVehicle() do Wait(1500) end
             if not startWorking then break end
             if not onRoute then
+                print('trigou')
                 TriggerEvent('angelicxs-CivilianJobs:taxiJob:FareSelector')
             end
         end
@@ -348,6 +350,7 @@ if Config.TaxiJobOn then
                 event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
             })
         elseif Config.QBMenu then
+            print('qbmenu')
             table.insert(menu, {
                     header = Config.Lang['taxi_menu_header_1']..info.name..Config.Lang['taxi_menu_header_2']..info.estimatedFare,
                     isMenuHeader = true
@@ -366,6 +369,7 @@ if Config.TaxiJobOn then
                 }
             })
         elseif Config.OXLib then
+            print('oxlib menu')
             table.insert(menu, {
                 title = Config.Lang['taxi_menu_yes'],
                 onSelect = function()

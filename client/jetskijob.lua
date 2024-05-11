@@ -11,7 +11,7 @@ local Jetski_Options = {
     },
     Sprite = {
         icon = 153,
-        colour = 12,
+        colour = 43,
         name = 'Angelic Lifeguard Co',
     },
     Boat = {

@@ -11,7 +11,7 @@ local Garbage_Options = {
     },
     Sprite = {
         icon = 318,
-        colour = 12,
+        colour = 43,
         name = 'Angelic Trash Management',
     },
     Truck = {

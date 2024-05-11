@@ -7,8 +7,8 @@
 local Bus_Options = {
     Sprite = {
         icon = 513,
-        colour = 12,
-        name = 'Angelic Bus Terminal',
+        colour = 43,
+        name = 'Terminal de ônibus',
     },
     Boss = {
         Location = vector4(454.06, -622.56, 28.51, 251.65),
@@ -313,7 +313,8 @@ if Config.BusJobOn then
                                 else
                                     TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['bus_get_on'], Config.LangType['info'])
                                     GetOnBus(safeCoord)
-                                    while not IsPedInVehicle(busPed, MissionVehicle, true) do
+                                    while GetVehiclePedIsIn(busPed, false) == 0 do
+                                        print('esperando')
                                         Wait(500)
                                     end
                                 end
@@ -353,8 +354,9 @@ if Config.BusJobOn then
             if IsVehicleSeatFree(MissionVehicle, i) then
                 FreezeEntityPosition(busPed, false)
                 ClearPedTasksImmediately(busPed)
-                TaskEnterVehicle(busPed, MissionVehicle, -1, i, 1.0, 1, 0)
-                TaskEnterVehicle(ped, vehicle, timeout, seat, speed, flag, p6)
+                TaskEnterVehicle(busPed, MissionVehicle, 10000, i, 1.0, 1, 0)
+
+                -- TaskEnterVehicle(ped, vehicle, timeout, seat, speed, flag, p6)
                 onBus = true
                 return
             end

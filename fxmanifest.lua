@@ -4,6 +4,11 @@ game 'gta5'
 author 'AngelicXS'
 version '1.2'
 
+shared_script {
+    '@ox_lib/init.lua',
+    'config.lua',
+}
+
 client_script {
     'client/*.lua',
 }
@@ -12,4 +17,4 @@ server_script {
 	'server.lua',
 }
 
-shared_script 'config.lua'
+lua54 'yes'
