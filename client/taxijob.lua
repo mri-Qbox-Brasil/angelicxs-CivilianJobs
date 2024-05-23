@@ -514,6 +514,7 @@ if Config.TaxiJobOn then
         SetEntityAsNoLongerNeeded(taxiPed)
         taxiPed = nil
         taxiPedSpawn = false
+        exports["cw-rep"]:updateSkill("taxi", 5)
     end
 
     AddEventHandler('angelicxs-CivilianJobs:Main:ResetJobs', function()

@@ -75,7 +75,7 @@ RegisterNetEvent('angelicxs-CivilianJobs:VehicleInitation')
 AddEventHandler('angelicxs-CivilianJobs:VehicleInitation', function(vehicle)
 	-- Example provided:
 	TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(vehicle))
-    exports["cdn-fuel"]:SetFuel(vehicle, 99)
+    exports["cdn-fuel"]:SetFuel(vehicle, 100)
 end)
 
 -- Language Configuration
