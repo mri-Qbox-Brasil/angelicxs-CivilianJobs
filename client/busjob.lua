@@ -350,13 +350,11 @@ if Config.BusJobOn then
             print(Config.ErrorCodes['dev'], Config.ErrorCodes['007'], 'GetOnBus()')
             return
         end
-        for i = GetVehicleMaxNumberOfPassengers(MissionVehicle), 0, -1 do
+        for i = 1, GetVehicleMaxNumberOfPassengers(MissionVehicle) do
             if IsVehicleSeatFree(MissionVehicle, i) then
                 FreezeEntityPosition(busPed, false)
                 ClearPedTasksImmediately(busPed)
-                TaskEnterVehicle(busPed, MissionVehicle, 10000, i, 1.0, 1, 0)
-
-                -- TaskEnterVehicle(ped, vehicle, timeout, seat, speed, flag, p6)
+                TaskEnterVehicle(busPed, MissionVehicle, 5000, i, 2.0, 1, 0)
                 onBus = true
                 return
             end

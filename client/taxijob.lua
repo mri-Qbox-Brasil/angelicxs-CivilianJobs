@@ -53,7 +53,7 @@ Taxi_Options.Routes = { -- All locations are where the NPC would stand for the t
         vector4(922.03, 46.71, 81.11, 34.44),
     },
     DropMakerAllow = true,
-    DropMarker = 3,
+    DropMarker = 0,
 }
 
 local taxiPedOptions = {
