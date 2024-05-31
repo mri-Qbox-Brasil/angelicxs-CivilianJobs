@@ -376,6 +376,7 @@ if Config.BusJobOn then
         onBus = false
         busPed = nil
         busPedSpawn = false
+        exports["cw-rep"]:updateSkill("busdriver", 5)
     end
 
     AddEventHandler('angelicxs-CivilianJobs:Main:ResetJobs', function()
