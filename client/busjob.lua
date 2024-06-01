@@ -8,11 +8,14 @@ local Bus_Options = {
     Sprite = {
         icon = 513,
         colour = 43,
-        name = 'Terminal de ônibus',
+        name = 'Central de Ônibus',
     },
     Boss = {
         Location = vector4(454.06, -622.56, 28.51, 251.65),
         Model = 'u_m_y_proldriver_01',
+        Name = "Carlos",
+        tag = "MOTORISTA",
+        message = "👋 Olá, me chamo 😃**Carlos Humberto**, mas pode me chamar de **Seu Carlos**.  \nVou te ensinar a como trabalhar aqui na 🚌 empresa de ônibus. É bem simples!  \nTe daremos o veículo de transporte público e você fará a rota que vai estar marcada em seu GPS, parando nos pontos para pegar os cidadãos da nossa cidade. 🚏  \nÉ bem fácil, né?  \nAgora larga mão de preguiça e vai trabalhar! 💼👊"
     },
     Payment = { -- Pays on drop off of NPC
         flatRate = false,
@@ -234,7 +237,7 @@ if Config.BusJobOn then
             local BusBoss = vector3(Bus_Options.Boss.Location.x, Bus_Options.Boss.Location.y, Bus_Options.Boss.Location.z)
             local Dist = #(Pos - BusBoss)
             if Dist <= 50 and not PedSpawned then
-                TriggerEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC', Bus_Options.Boss.Model, Bus_Options.Boss.Location, 'angelicxs-CivilianJobs:BusJob:AskForWork', 'angelicxs-CivilianJobs:BusJob:HowTo', ' BusJob.lua')
+                TriggerEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC', Bus_Options.Boss.Model, Bus_Options.Boss.Location, 'angelicxs-CivilianJobs:BusJob:AskForWork', 'angelicxs-CivilianJobs:BusJob:HowTo', ' BusJob.lua', Bus_Options)
                 PedSpawned = true
             elseif PedSpawned and Dist > 50 then
                 PedSpawned = false

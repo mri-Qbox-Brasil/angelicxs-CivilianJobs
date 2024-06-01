@@ -15,12 +15,15 @@ Taxi_Options.Payment = { -- Pays on drop off of NPC
 Taxi_Options.Boss = {
     Location = vector4(896.22, -177.72, 74.7, 232.65),
     Model = 'cs_manuel',
+    Name = "Toninho",
+    tag = "TAXISTA",
+    message = "👋 Olá, me chamo 😃**Antonio Ferraz**, mas pode me chamar de **Seu Toninho**.  \nVou te ensinar a como trabalhar aqui na 🚖 agência de táxi. É bem simples!  \nTe daremos o veículo do táxi e depois de um tempo você receberá chamados dos clientes. 📞  \nVocê irá até eles e depois irá deixá-los onde eles te pedirem.  \nAgora larga mão de preguiça e vai trabalhar! 💼👊"
 }
 
 Taxi_Options.Sprite = {
     icon = 198,
     colour = 43,
-    name = 'Angelic Taxi Services',
+    name = 'Central de Táxi',
 }
 
 Taxi_Options.Taxi = {
@@ -30,7 +33,6 @@ Taxi_Options.Taxi = {
     Spawn = vector4(900.15, -180.67, 73.87, 243.76),
     MinWait = 30, -- Minimum time (in seconds) between calls
     MaxWait = 60, -- Maximum time (in seconds) between calls
-
 }
 
 Taxi_Options.Routes = { -- All locations are where the NPC would stand for the taxi
@@ -251,7 +253,7 @@ if Config.TaxiJobOn then
             local TaxiBoss = vector3(Taxi_Options.Boss.Location.x, Taxi_Options.Boss.Location.y, Taxi_Options.Boss.Location.z)
             local Dist = #(Pos - TaxiBoss)
             if Dist <= 50 and not PedSpawned then
-                TriggerEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC', Taxi_Options.Boss.Model, Taxi_Options.Boss.Location, 'angelicxs-CivilianJobs:taxiJob:AskForWork', 'angelicxs-CivilianJobs:taxiJob:HowTo', ' taxiJob.lua')
+                TriggerEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC', Taxi_Options.Boss.Model, Taxi_Options.Boss.Location, 'angelicxs-CivilianJobs:taxiJob:AskForWork', 'angelicxs-CivilianJobs:taxiJob:HowTo', ' taxiJob.lua', Taxi_Options)
                 PedSpawned = true
             elseif PedSpawned and Dist > 50 then
                 PedSpawned = false

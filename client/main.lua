@@ -60,7 +60,7 @@ CreateThread(function()
     end
 end)
 
-RegisterNetEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC',function(model, coords, eventTrigger, eventTrigger2, askedEvent)
+RegisterNetEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC',function(model, coords, eventTrigger, eventTrigger2, askedEvent, config)
     if Config.UsePedAsJobBoss then
         local hash = HashGrabber(model)
         local pcoord = vector3(coords[1], coords[2], coords[3])
@@ -68,7 +68,44 @@ RegisterNetEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC',function(model, coor
             print(Config.ErrorCodes['dev'], Config.ErrorCodes['005'], tostring(askedEvent))
             return
         end
-        NPC = CreatePed(3, hash, coords[1], coords[2], (coords[3]-1), coords[4], false, false)
+        NPC = exports['rep-talkNPC']:CreateNPC({
+            npc = model,
+            coords = vector3(coords[1], coords[2], coords[3]-1),
+            heading = coords[4],
+            name = config.Boss.Name,
+            tag = config.Boss.tag,
+            animScenario = 'WORLD_HUMAN_CLIPBOARD',
+            color = "green",
+            startMSG = 'Tá precisando de um emprego rápido?'
+        }, {
+            [1] = {
+                label = "Como funciona esse trabalho?",
+                shouldClose = false,
+                action = function()
+                    exports['rep-talkNPC']:changeDialog(config.Boss.message, 
+                        {
+                            [1] = {
+                                label = "Entendido. E depois?",
+                                shouldClose = true,
+                                action = function()
+                                end
+                            },
+                            [2] = {
+                                label = "Ah sim... Tenho que fazer outra coisa.",
+                                shouldClose = true,
+                                action = function()
+                                end
+                            }
+                        })
+                end
+            },
+            [2] = {
+                label = "Talvez outra hora...",
+                shouldClose = true,
+                action = function()
+                end
+            }
+        })
         FreezeEntityPosition(NPC, true)
         SetEntityInvincible(NPC, true)
         SetBlockingOfNonTemporaryEvents(NPC, true)
@@ -87,12 +124,13 @@ RegisterNetEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC',function(model, coor
                         icon = 'fa-solid fa-warehouse',
                         event = 'angelicxs-CivilianJobs:MAIN:RemoveVehicle',
                         label = Config.Lang['vehicle_return_request'],
-                    }, {
-                        name = 'CivJobBossHow',
-                        icon = 'fa-solid fa-comment',
-                        event = eventTrigger2,
-                        label = Config.Lang['ask_how_to'],
-                    }
+                    },
+                    -- {
+                    --     name = 'CivJobBossHow',
+                    --     icon = 'fa-solid fa-comment',
+                    --     event = eventTrigger2,
+                    --     label = Config.Lang['ask_how_to'],
+                    -- }
                 }
                 exports.ox_target:addLocalEntity(NPC, ox_options)
             else
