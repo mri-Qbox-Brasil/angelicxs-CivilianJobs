@@ -85,7 +85,7 @@ RegisterNetEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC',function(model, coor
                     exports['rep-talkNPC']:changeDialog(config.Boss.message, 
                         {
                             [1] = {
-                                label = "Entendido. E depois?",
+                                label = "Entendi",
                                 shouldClose = true,
                                 action = function()
                                 end
