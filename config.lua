@@ -56,7 +56,7 @@ Config.UsePlayerJob = false					-- If true requires the player to have the appro
 Config.VehicleSteward = true				-- If true, will not let the player do any more jobs if they have returned a destroyed vehicle (they will need to relog to reset this)
 Config.BusJobOn = true						-- If true allows the bus job
 Config.BusJobName = 'bus-driver'			-- Name of the bus job, used if Config.UsePlayerJob = true
-Config.ForkliftJobOn = true					-- If true allows the forklift job
+Config.ForkliftJobOn = false					-- If true allows the forklift job
 Config.ForkliftJobName = 'forklift-driver'	-- Name of the forklift job, used if Config.UsePlayerJob = true
 Config.TaxiJobOn = true						-- If true allows the taxi job
 Config.TaxiJobName = 'taxi-driver'			-- Name of the taxi job, used if Config.UsePlayerJob = true
