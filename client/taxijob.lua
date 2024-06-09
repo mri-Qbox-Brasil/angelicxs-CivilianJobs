@@ -17,7 +17,8 @@ Taxi_Options.Boss = {
     Model = 'cs_manuel',
     Name = "Toninho",
     tag = "TAXISTA",
-    message = "👋 Olá, me chamo 😃**Antonio Ferraz**, mas pode me chamar de **Seu Toninho**.  \nVou te ensinar a como trabalhar aqui na 🚖 agência de táxi. É bem simples!  \nTe daremos o veículo do táxi e depois de um tempo você receberá chamados dos clientes. 📞  \nVocê irá até eles e depois irá deixá-los onde eles te pedirem.  \nAgora larga mão de preguiça e vai trabalhar! 💼👊"
+    message =
+    "👋 Olá, me chamo 😃**Antonio Ferraz**, mas pode me chamar de **Seu Toninho**.  \nVou te ensinar a como trabalhar aqui na 🚖 agência de táxi. É bem simples!  \nTe daremos o veículo do táxi e depois de um tempo você receberá chamados dos clientes. 📞  \nVocê irá até eles e depois irá deixá-los onde eles te pedirem.  \nAgora larga mão de preguiça e vai trabalhar! 💼👊"
 }
 
 Taxi_Options.Sprite = {
@@ -244,16 +245,21 @@ local taxiPed = false
 local onRoute = false
 local startWorking = false
 
-if Config.TaxiJobOn then 
+if Config.TaxiJobOn then
     CreateThread(function()
-        JobBlip(Taxi_Options.Boss.Location, Taxi_Options.Sprite.icon, Taxi_Options.Sprite.colour, Taxi_Options.Sprite.name)
-        Job3DText(Taxi_Options.Boss.Location, 'angelicxs-CivilianJobs:taxiJob:AskForWork', 'angelicxs-CivilianJobs:taxiJob:HowTo')
+        JobBlip(Taxi_Options.Boss.Location, Taxi_Options.Sprite.icon, Taxi_Options.Sprite.colour,
+            Taxi_Options.Sprite.name)
+        Job3DText(Taxi_Options.Boss.Location, 'angelicxs-CivilianJobs:taxiJob:AskForWork',
+            'angelicxs-CivilianJobs:taxiJob:HowTo')
         while true do
             local Pos = GetEntityCoords(PlayerPedId())
-            local TaxiBoss = vector3(Taxi_Options.Boss.Location.x, Taxi_Options.Boss.Location.y, Taxi_Options.Boss.Location.z)
+            local TaxiBoss = vector3(Taxi_Options.Boss.Location.x, Taxi_Options.Boss.Location.y,
+                Taxi_Options.Boss.Location.z)
             local Dist = #(Pos - TaxiBoss)
             if Dist <= 50 and not PedSpawned then
-                TriggerEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC', Taxi_Options.Boss.Model, Taxi_Options.Boss.Location, 'angelicxs-CivilianJobs:taxiJob:AskForWork', 'angelicxs-CivilianJobs:taxiJob:HowTo', ' taxiJob.lua', Taxi_Options)
+                TriggerEvent('angelicxs-CivilianJobs:MAIN:SpawnBossNPC', Taxi_Options.Boss.Model,
+                    Taxi_Options.Boss.Location, 'angelicxs-CivilianJobs:taxiJob:AskForWork',
+                    'angelicxs-CivilianJobs:taxiJob:HowTo', ' taxiJob.lua', Taxi_Options)
                 PedSpawned = true
             elseif PedSpawned and Dist > 50 then
                 PedSpawned = false
@@ -271,7 +277,8 @@ if Config.TaxiJobOn then
         if FreeWork or PlayerJob == Config.TaxiJobName then
             if not MissionVehicle then
                 local ChosenTaxi = Randomizer(Taxi_Options.Taxi.Types, 'angelicxs-CivilianJobs:taxiJob:AskForWork')
-                TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenTaxi, Taxi_Options.Taxi.Spawn, 'angelicxs-CivilianJobs:taxiJob:AskForWork')
+                TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenTaxi, Taxi_Options.Taxi.Spawn,
+                    'angelicxs-CivilianJobs:taxiJob:AskForWork')
                 while not DoesEntityExist(MissionVehicle) do
                     Wait(25)
                 end
@@ -294,7 +301,7 @@ if Config.TaxiJobOn then
             end
         else
             print(Config.ErrorCodes['dev'], Config.ErrorCodes['007'], 'angelicxs-CivilianJobs:taxiJob:BeginWork')
-        end    
+        end
     end)
 
     function TaxiOperator()
@@ -314,12 +321,11 @@ if Config.TaxiJobOn then
         while true do
             while onRoute do Wait(1000) end
             local seconds = math.random(Taxi_Options.Taxi.MinWait, Taxi_Options.Taxi.MaxWait)
-            Wait(seconds*1000)
+            Wait(seconds * 1000)
             print('taxi')
             while not UsingMissionVehicle() do Wait(1500) end
             if not startWorking then break end
             if not onRoute then
-                print('trigou')
                 TriggerEvent('angelicxs-CivilianJobs:taxiJob:FareSelector')
             end
         end
@@ -336,11 +342,13 @@ if Config.TaxiJobOn then
         info.safeFinish = vector3(info.finish.x, info.finish.y, info.finish.z)
         info.estimatedFare = Taxi_Options.Payment.flatRateAmount
         if not Taxi_Options.Payment.flatRate then
-            info.estimatedFare = math.floor(#(info.safeStart - info.safeFinish)*Taxi_Options.Payment.DistanceMultiplier)
+            info.estimatedFare = math.floor(#(info.safeStart - info.safeFinish) * Taxi_Options.Payment
+                .DistanceMultiplier)
         end
         if Config.NHMenu then
             table.insert(menu, {
-                header = Config.Lang['taxi_menu_header_1']..info.name..Config.Lang['taxi_menu_header_2']..info.estimatedFare,
+                header = Config.Lang['taxi_menu_header_1'] ..
+                    info.name .. Config.Lang['taxi_menu_header_2'] .. info.estimatedFare,
             })
             table.insert(menu, {
                 header = Config.Lang['taxi_menu_yes'],
@@ -354,16 +362,17 @@ if Config.TaxiJobOn then
         elseif Config.QBMenu then
             print('qbmenu')
             table.insert(menu, {
-                    header = Config.Lang['taxi_menu_header_1']..info.name..Config.Lang['taxi_menu_header_2']..info.estimatedFare,
-                    isMenuHeader = true
-                })
+                header = Config.Lang['taxi_menu_header_1'] ..
+                    info.name .. Config.Lang['taxi_menu_header_2'] .. info.estimatedFare,
+                isMenuHeader = true
+            })
             table.insert(menu, {
                 header = Config.Lang['taxi_menu_yes'],
-                    params = {
-                        event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
-                        args = info
-                    }
-                })
+                params = {
+                    event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
+                    args = info
+                }
+            })
             table.insert(menu, {
                 header = Config.Lang['taxi_menu_no'],
                 params = {
@@ -390,15 +399,42 @@ if Config.TaxiJobOn then
         elseif Config.QBMenu then
             TriggerEvent("qb-menu:client:openMenu", menu)
         elseif Config.OXLib then
-            lib.registerContext({
-                id = 'taximenu_ox',
-                options = menu,
-                title = Config.Lang['taxi_menu_header_1']..info.name..Config.Lang['taxi_menu_header_2']..info.estimatedFare,
+            lib.registerMenu({
+                id = 'some_menu_id',
+                title = Config.Lang['taxi_menu_header_1'],
                 position = 'top-right',
+                onSelected = function(selected, secondary, args)
+                end,
+                onClose = function(keyPressed)
+                end,
+                options = {
+                    {
+                        label = 'Aceitar Corrida',
+                        description = 'Nome: ' .. info.name .. ' | ' .. Config.Lang['taxi_menu_header_2'] .. info.estimatedFare,
+                        icon = 'check',
+                        iconColor = 'green',
+                        event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
+                        args = { info }
+                    },
+                    {
+                        label = 'Negar Corrida',
+                        icon = 'x',
+                        iconColor ='red',
+                        description = 'Cancelar e esperar a próxima corrida.',
+                        event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
+                        args = false
+                    },
+                }
             }, function(selected, scrollIndex, args)
+                if selected == 2 and not args then
+                    TriggerEvent("angelicxs-CivilianJobs:taxiJob:JobAccepted", false)
+                end
+                if selected == 1 and args then
+                    TriggerEvent("angelicxs-CivilianJobs:taxiJob:JobAccepted", args[1])
+                end
             end)
-            lib.showContext('taximenu_ox')
-        end 
+            lib.showMenu('some_menu_id')
+        end
     end)
 
     RegisterNetEvent('angelicxs-CivilianJobs:taxiJob:JobAccepted', function(data)
@@ -406,18 +442,20 @@ if Config.TaxiJobOn then
             TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_fare_declined'], Config.LangType['error'])
         elseif data.name then
             onRoute = true
-            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_fare_accepted']..data.name, Config.LangType['info'])
+            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_fare_accepted'] .. data.name,
+                Config.LangType['info'])
             TaxiRouteManager(data)
         end
     end)
 
     function TaxiRouteManager(data)
-        TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, data.safeStart, 'Pick Up Location', 'TaxiRouteManager()')
+        TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, data.safeStart, 'Pick Up Location',
+            'TaxiRouteManager()')
         taxiPedSpawn = false
         while true do
             local sleep = 1100
             local coord = GetEntityCoords(PlayerPedId())
-            local dist = #(coord-data.safeStart)
+            local dist = #(coord - data.safeStart)
             if dist <= 75 and UsingMissionVehicle() then
                 sleep = 550
                 if not taxiPedSpawn then
@@ -428,7 +466,8 @@ if Config.TaxiJobOn then
                     if dist <= 15 then
                         if IsVehicleStopped(MissionVehicle) then
                             FreezeEntityPosition(MissionVehicle, true)
-                            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_get_on'], Config.LangType['info'])
+                            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_get_on'],
+                                Config.LangType['info'])
                             GetOnTaxi(data.safeStart)
                             while not IsPedInVehicle(taxiPed, MissionVehicle, true) do
                                 Wait(500)
@@ -439,27 +478,31 @@ if Config.TaxiJobOn then
                     end
                 end
             end
-            Wait(sleep)            
+            Wait(sleep)
         end
         while not IsPedInAnyVehicle(taxiPed, true) do Wait(500) end
         TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_bring_client'], Config.LangType['info'])
-        TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, data.safeFinish, 'Drop Off Location', 'TaxiRouteManager()')
+        TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, data.safeFinish, 'Drop Off Location',
+            'TaxiRouteManager()')
         while true do
             local sleep = 1100
             local coord = GetEntityCoords(PlayerPedId())
-            local dist = #(coord-data.safeFinish)
+            local dist = #(coord - data.safeFinish)
             if dist <= 75 and UsingMissionVehicle() then
                 sleep = 550
                 if dist <= 25 then
                     sleep = 0
                     if dist <= 15 then
                         if Taxi_Options.Routes.DropMakerAllow then
-                            DrawMarker(Taxi_Options.Routes.DropMarker, data.safeFinish.x, data.safeFinish.y, (data.safeFinish.z+2), 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 2.0, 2.0, 2.0, 100, 200, 50, 255, true, true, 2, 0.0, false, false, false)
+                            DrawMarker(Taxi_Options.Routes.DropMarker, data.safeFinish.x, data.safeFinish.y,
+                                (data.safeFinish.z + 2), 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 2.0, 2.0, 2.0, 100, 200, 50, 255,
+                                true, true, 2, 0.0, false, false, false)
                         end
                         if IsVehicleStopped(MissionVehicle) then
                             FreezeEntityPosition(MissionVehicle, true)
                             onRoute = false
-                            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_get_off'], Config.LangType['info'])
+                            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_get_off'],
+                                Config.LangType['info'])
                             GetOffTaxi(data.safeStart, data.safeFinish)
                             while IsPedInVehicle(taxiPed, MissionVehicle, true) do
                                 Wait(500)
@@ -470,7 +513,7 @@ if Config.TaxiJobOn then
                     end
                 end
             end
-            Wait(sleep)  
+            Wait(sleep)
         end
         TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['taxi_route_complete'], Config.LangType['success'])
     end
@@ -479,16 +522,16 @@ if Config.TaxiJobOn then
         taxiPedSpawn = true
         local model = Randomizer(taxiPedOptions, 'SpawntaxiPed()')
         local hash = HashGrabber(model)
-        taxiPed = CreatePed(3, hash, coords.x, coords.y, (coords.z-1), coords.w, false, false)
+        taxiPed = CreatePed(3, hash, coords.x, coords.y, (coords.z - 1), coords.w, false, false)
         FreezeEntityPosition(taxiPed, true)
         SetEntityInvincible(taxiPed, true)
         SetBlockingOfNonTemporaryEvents(taxiPed, true)
-        TaskStartScenarioInPlace(taxiPed,'WORLD_HUMAN_STAND_MOBILE', 0, false)
+        TaskStartScenarioInPlace(taxiPed, 'WORLD_HUMAN_STAND_MOBILE', 0, false)
         SetModelAsNoLongerNeeded(model)
     end
 
     function GetOnTaxi(coords)
-        if #(coords-GetEntityCoords(PlayerPedId())) > 15 then
+        if #(coords - GetEntityCoords(PlayerPedId())) > 15 then
             print(Config.ErrorCodes['dev'], Config.ErrorCodes['007'], 'GetOnTaxi()')
             return
         end
