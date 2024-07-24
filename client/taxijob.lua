@@ -413,7 +413,6 @@ if Config.TaxiJobOn then
                         description = 'Nome: ' .. info.name .. ' | ' .. Config.Lang['taxi_menu_header_2'] .. info.estimatedFare,
                         icon = 'check',
                         iconColor = 'green',
-                        event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
                         args = { info }
                     },
                     {
@@ -421,16 +420,13 @@ if Config.TaxiJobOn then
                         icon = 'x',
                         iconColor ='red',
                         description = 'Cancelar e esperar a próxima corrida.',
-                        event = 'angelicxs-CivilianJobs:taxiJob:JobAccepted',
-                        args = false
                     },
                 }
             }, function(selected, scrollIndex, args)
-                if selected == 2 and not args then
-                    TriggerEvent("angelicxs-CivilianJobs:taxiJob:JobAccepted", false)
-                end
-                if selected == 1 and args then
+                if args then
                     TriggerEvent("angelicxs-CivilianJobs:taxiJob:JobAccepted", args[1])
+                else
+                    TriggerEvent("angelicxs-CivilianJobs:taxiJob:JobAccepted", false)
                 end
             end)
             lib.showMenu('some_menu_id')
