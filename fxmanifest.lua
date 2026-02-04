@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'AngelicXS'
-version '1.2'
+version '1.4.4'
 
 shared_script {
     '@ox_lib/init.lua',

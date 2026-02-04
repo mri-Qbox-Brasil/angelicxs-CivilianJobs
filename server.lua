@@ -11,8 +11,8 @@ end
 AddEventHandler('onResourceStart', function(resource)
     local partB = 'ngelicxs-CivilianJobs'
     local name = tostring('a'..partB)
-    if GetCurrentResourceName() ~= name then
-        print('This script was brought to you by A'..'ngelicXS! However, the resource name has been changed. Thank you for using this resource and consider renaming it to help support scripts like it.')
+    if GetCurrentResourceName() == resource and GetCurrentResourceName() ~= name then
+        print('Your civilian job script was brought to you by A'..'ngelicXS! However, the resource name has been changed. Thank you for using this resource and consider renaming it to help support scripts like it.')
     end
 end)
 
@@ -49,7 +49,38 @@ end)
 RegisterServerEvent('angelicxs-CivilianJobs:Server:GainItem')
 AddEventHandler('angelicxs-CivilianJobs:Server:GainItem', function(name, amount)
     local src = source
-    local exp = tostring(src..'item')
+    local exp = tostring(src..'item'..name)
+    if recPaid[exp] then
+        local license =  'Unknown'
+        for k, v in ipairs(GetPlayerIdentifiers(src)) do
+            print(k,v)
+            if string.match(v, "license:") then
+                license = v
+                break
+            end
+        end
+        DropPlayer(src, Config.ErrorCodes['012'])
+        print("\n\n\n"..Config.ErrorCodes['012']..' '..Config.ErrorCodes['013']..' '..src..' '..license.."\n\n\n")
+        return
+    else
+        recPaid[exp] = true
+    end
+    if Config.UseESX then
+        local xPlayer = ESX.GetPlayerFromId(src)
+		xPlayer.addInventoryItem(name, amount)
+    elseif Config.UseQBCore then
+        local Player = QBCore.Functions.GetPlayer(src)
+        Player.Functions.AddItem(name, amount)
+    end
+    TriggerClientEvent('angelicxs-CivilianJobs:Notify',src, Config.Lang['payment_notice_item']..' '..tostring(amount)..' '..tostring(name), Config.LangType['success'])
+    Wait(1000)
+    recPaid[exp] = false
+end)
+
+RegisterServerEvent('angelicxs-CivilianJobs:Server:GainItemMaterial')
+AddEventHandler('angelicxs-CivilianJobs:Server:GainItemMaterial', function(name, amount)
+    local src = source
+    local exp = tostring(src..name..amount..math.random(10000,99999))
     if recPaid[exp] then
         local license =  'Unknown'
         for k, v in ipairs(GetPlayerIdentifiers(src)) do

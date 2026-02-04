@@ -21,12 +21,25 @@ local Bus_Options = {
         flatRate = false,
         flatRateAmount = 100,
         DistanceMultiplier = 0.2, -- Only applies if flatRate = false, pays driver based on multiplying distance from pick up to drop off.
+        materialGain = true, -- if true will give every item in the materialList to the player
+        materialList = { -- List of items to give to play when they RECEIVE PAYMENT
+            {name = 'rubber', min = 1, max = 2},
+            {name = 'plastic', min = 1, max = 2},
+            {name = 'metalscrap', min = 1, max = 2},
+            {name = 'copper', min = 1, max = 2},
+            {name = 'iron', min = 1, max = 2},
+            {name = 'steel', min = 1, max = 2},
+        },
     },
     Bus = {
         Types = {
             'bus',
         },
-        Spawn = vector4(466.29, -631.3, 28.5, 172.78),
+        Spawn = {
+            vector4(463.03, -614.61, 28.5, 215.97),
+            vector4(461.93, -628.29, 28.5, 215.96),
+            vector4(459.14, -641.05, 28.5, 215.46),
+        },
         RouteNames = {
             'Route10',
             'Route21',
@@ -37,12 +50,12 @@ local Bus_Options = {
                 vector4(303.53, -766.33, 29.31, 247.1),
                 vector4(264.42, -1213.14, 29.4, 183.4),
                 vector4(25.38, -1354.62, 29.34, 178.19),
-                vector4(-491.41, -1294.74, 27.23, 75.57), 
+                vector4(-491.41, -1294.74, 27.23, 75.57),
                 vector4(-523.75, -1025.82, 22.84, 83.65),
                 vector4(-529.46, -718.97, 33.08, 137.54),
                 vector4(-504.14, -671.27, 33.09, 3.76),
                 vector4(-119.96, -313.5, 39.21, 63.21),
-                vector4(55.98, -231.11, 50.45, 67.66), 
+                vector4(55.98, -231.11, 50.45, 67.66),
                 vector4(404.53, -304.59, 51.42, 338.33),
                 vector4(244.79, -582.04, 43.22, 244.21),
                 vector4(221.93, -855.83, 30.2, 335.89),
@@ -228,7 +241,7 @@ local onBus = false
 local lastStop = false
 local onRoute = false
 
-if Config.BusJobOn then 
+if Config.BusJobOn then
     CreateThread(function()
         JobBlip(Bus_Options.Boss.Location, Bus_Options.Sprite.icon, Bus_Options.Sprite.colour, Bus_Options.Sprite.name)
         Job3DText(Bus_Options.Boss.Location, 'angelicxs-CivilianJobs:BusJob:AskForWork', 'angelicxs-CivilianJobs:BusJob:HowTo')
@@ -253,6 +266,7 @@ if Config.BusJobOn then
 
     RegisterNetEvent('angelicxs-CivilianJobs:BusJob:AskForWork', function()
         if FreeWork or PlayerJob == Config.BusJobName then
+            if gettingMissionVehicle then TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['getting_vehicle'], Config.LangType['error']) return end
             if not MissionVehicle then
                 local ChosenBus = Randomizer(Bus_Options.Bus.Types, 'angelicxs-CivilianJobs:BusJob:AskForWork')
                 TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenBus, Bus_Options.Bus.Spawn, 'angelicxs-CivilianJobs:BusJob:AskForWork')
@@ -310,9 +324,6 @@ if Config.BusJobOn then
                                 if onBus then
                                     TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['bus_get_off'], Config.LangType['info'])
                                     GetOffBus(safeCoord, lastStop)
-                                    while IsPedInVehicle(busPed, MissionVehicle, true) do
-                                        Wait(500)
-                                    end
                                 else
                                     TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['bus_get_on'], Config.LangType['info'])
                                     GetOnBus(safeCoord)
@@ -328,12 +339,41 @@ if Config.BusJobOn then
                         end
                     end
                 end
-                Wait(sleep)            
+                Wait(sleep)
             end
-        end    
+        end
         onRoute = false
-        TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, Bus_Options.Bus.Spawn, 'Bus Terminal', 'BusRouteManager()')
         TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['bus_route_complete'], Config.LangType['success'])
+        if Config.ContinousMode then
+            local headerName = Config.Lang['continous_mode_header']
+            local options = {
+                {
+                    header = Config.Lang['continous_mode_yes'], -- nh / qbmenu
+                    event = 'angelicxs-CivilianJobs:BusJob:BeginWork', -- nh
+                    params = { -- qb menu
+                        event = 'angelicxs-CivilianJobs:BusJob:BeginWork',
+                    },
+                    title = Config.Lang['continous_mode_yes'], -- oxlibs
+                    onSelect = function() -- oxlibs
+                        TriggerEvent("angelicxs-CivilianJobs:BusJob:BeginWork")
+                    end,
+                },
+                {
+                    header = Config.Lang['continous_mode_no'], -- nh / qbmenu
+                    event = 'angelicxs-CivilianJobs:MAIN:NoContinueMode', -- nh
+                    params = { -- qb menu
+                        event = 'angelicxs-CivilianJobs:MAIN:NoContinueMode',
+                    },
+                    title = Config.Lang['continous_mode_no'], -- oxlibs
+                    onSelect = function() -- oxlibs
+                        TriggerEvent("angelicxs-CivilianJobs:MAIN:NoContinueMode")
+                    end,
+                },
+            }
+            jobMainMenu(headerName, options)
+        else
+            TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, Bus_Options.Boss.Location.xyz, 'Bus Terminal', 'BusRouteManager()')
+        end
     end
 
     function SpawnBusPed(coords)
@@ -367,14 +407,25 @@ if Config.BusJobOn then
 
     function GetOffBus(inital, final)
         TaskLeaveVehicle(busPed, MissionVehicle, 0)
+        local timeout = 5
+        while IsPedInAnyVehicle(busPed) do
+            timeout = timeout - 1
+            Wait(1000)
+            if timeout < 0 then
+                print("Timeout exceeded releasing position")
+                break
+            end
+        end
         if Bus_Options.Payment.flatRate then
             PaymentFlat(Bus_Options.Payment.flatRateAmount, 'Bus Job - GetOffBus()')
         else
             DistancePayment(inital, final, 'Bus Job - GetOffBus()', Bus_Options.Payment.DistanceMultiplier)
         end
-        TaskGoStraightToCoord(busPed, inital.x, inital.y, inital.z, 1.0, -1.0, 0.0, 0.0)
-        Wait(5000)
-        TaskGoStraightToCoord(busPed, final.x, final.y, final.z, 1.0, -1.0, 0.0, 0.0)
+        if Bus_Options.Payment.materialGain then
+            for i = 1, #Bus_Options.Payment.materialList do
+                PaymentItemMaterial(Bus_Options.Payment.materialList[i], 'Bus Job - GetOffBus()')
+            end
+        end
         SetEntityAsNoLongerNeeded(busPed)
         onBus = false
         busPed = nil

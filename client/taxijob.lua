@@ -10,6 +10,15 @@ Taxi_Options.Payment = { -- Pays on drop off of NPC
     flatRate = false,
     flatRateAmount = 100,
     DistanceMultiplier = 0.4, -- Only applies if flatRate = false, pays driver based on multiplying distance from pick up to drop off.
+    materialGain = true, -- if true will give every item in the materialList to the player
+    materialList = { -- List of items to give to play when they RECEIVE PAYMENT
+        {name = 'rubber', min = 1, max = 2},
+        {name = 'plastic', min = 1, max = 2},
+        {name = 'metalscrap', min = 1, max = 2},
+        {name = 'copper', min = 1, max = 2},
+        {name = 'iron', min = 1, max = 2},
+        {name = 'steel', min = 1, max = 2},
+    },
 }
 
 Taxi_Options.Boss = {
@@ -31,7 +40,18 @@ Taxi_Options.Taxi = {
     Types = {
         'taxi',
     },
-    Spawn = vector4(900.15, -180.67, 73.87, 243.76),
+    SpawnLocations = {
+        vector4(916.45, -170.62, 74.44, 103.39),
+        vector4(918.35, -167.02, 74.63, 98.34),
+        vector4(921.18, -163.46, 74.86, 96.32),
+        vector4(914.07, -160.41, 74.74, 197.14),
+        vector4(911.35, -163.17, 74.38, 199.78),
+        vector4(909.29, -183.58, 74.19, 60.71),
+        vector4(907.39, -186.44, 74.03, 62.95),
+        vector4(905.68, -189.32, 73.81, 56.6),
+        vector4(897.4, -183.6, 73.76, 239.29),
+        vector4(898.92, -180.4, 73.82, 238.54),
+    },
     MinWait = 30, -- Minimum time (in seconds) between calls
     MaxWait = 60, -- Maximum time (in seconds) between calls
 }
@@ -275,10 +295,10 @@ if Config.TaxiJobOn then
 
     RegisterNetEvent('angelicxs-CivilianJobs:taxiJob:AskForWork', function()
         if FreeWork or PlayerJob == Config.TaxiJobName then
+            if gettingMissionVehicle then TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['getting_vehicle'], Config.LangType['error']) return end
             if not MissionVehicle then
                 local ChosenTaxi = Randomizer(Taxi_Options.Taxi.Types, 'angelicxs-CivilianJobs:taxiJob:AskForWork')
-                TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenTaxi, Taxi_Options.Taxi.Spawn,
-                    'angelicxs-CivilianJobs:taxiJob:AskForWork')
+                TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenTaxi, Taxi_Options.Taxi.SpawnLocations, 'angelicxs-CivilianJobs:taxiJob:AskForWork')
                 while not DoesEntityExist(MissionVehicle) do
                     Wait(25)
                 end
@@ -545,9 +565,14 @@ if Config.TaxiJobOn then
     function GetOffTaxi(inital, final)
         TaskLeaveVehicle(taxiPed, MissionVehicle, 0)
         if Taxi_Options.Payment.flatRate then
-            PaymentFlat(Taxi_Options.Payment.flatRateAmount, 'GetOffTaxi()')
+            PaymentFlat(Taxi_Options.Payment.flatRateAmount, 'Taxi Job - GetOffTaxi()')
         else
-            DistancePayment(inital, final, 'GetOffTaxi()', Taxi_Options.Payment.DistanceMultiplier)
+            DistancePayment(inital, final, 'Taxi Job - GetOffTaxi()', Taxi_Options.Payment.DistanceMultiplier)
+        end
+        if Taxi_Options.Payment.materialGain then
+            for i = 1, #Taxi_Options.Payment.materialList do
+                PaymentItemMaterial(Taxi_Options.Payment.materialList[i], 'Taxi Job - GetOffTaxi()')
+            end
         end
         TaskGoStraightToCoord(taxiPed, inital.x, inital.y, inital.z, 1.0, -1.0, 0.0, 0.0)
         Wait(2000)

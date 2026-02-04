@@ -54,6 +54,7 @@ Config.ScubaItemName = 'diving_gear'		-- Name of scuba gear item to put on/take 
 -- General Configuration
 Config.UsePlayerJob = false					-- If true requires the player to have the appropriate job; job uses and names identified next
 Config.VehicleSteward = true				-- If true, will not let the player do any more jobs if they have returned a destroyed vehicle (they will need to relog to reset this)
+Config.ContinousMode = true					-- If true, will give a menu asking the player to do the next job when they finish instead of going back to the main ped (NOT ENABLED FOR TAXI OR SCUBA JOB).
 Config.BusJobOn = true						-- If true allows the bus job
 Config.BusJobName = 'bus-driver'			-- Name of the bus job, used if Config.UsePlayerJob = true
 Config.ForkliftJobOn = false					-- If true allows the forklift job
@@ -148,7 +149,7 @@ Config.Lang = {
 	['scuba_50'] = 'O oxigênio do tanque está em 50%!',
 	['scuba_25'] = 'O oxigênio do tanque está em 25%!',
 	['scuba_in_water'] = 'Você não pode fazer isso enquanto estiver na água!',
-	
+
 -- Idioma do Helicóptero
 	['heli_how_to'] = 'Explicação longa aqui',
 	['heli_start'] = 'Vá pegar a entrega prioritária da caixa e entregue ao cliente!',
@@ -162,7 +163,7 @@ Config.Lang = {
 	['jetski_job_complete'] = 'Você os salvou! Devolva seu veículo ou verifique mais relatórios conversando com o salva-vidas.',
 	['jetski_help_civ'] = 'Você encontrou o relatório! Pare perto do civil para ajudá-lo!',
 	['jetski_return_civ'] = 'Devolva o civil ao salva-vidas para garantir que estejam bem!',
-	
+
 -- Idioma da Coleta de Lixo
 	['garbage_how_to'] = 'Dirija até cada local marcado para pegar o lixo e então jogue o saco de lixo no caminhão. Assim que todas as paradas forem concluídas, o pagamento será feito.',
 	['garbage_start'] = 'Siga a rota marcada para pegar o lixo e jogá-lo no caminhão',

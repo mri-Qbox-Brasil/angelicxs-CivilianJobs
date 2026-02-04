@@ -3,7 +3,7 @@
 --			 The following options can be changed to make your      --
 --			  scub job unique and suit your server            		--
 ----------------------------------------------------------------------
-
+local ChosenBoat = false
 local Scuba_Options = {
     AnchorBoatCommand = true,
     AnchorBoatWord = 'anchorboat',
@@ -22,15 +22,15 @@ local Scuba_Options = {
             'dinghy',
         }
     },
-    UnderwaterTimer = 300, -- In seconds
+    UnderwaterTimer = 420, -- In seconds
     Payment = {
-        flatRate = false,
-        flatRateAmount = 100,
+        flatRate = true,
+        flatRateAmount = 1500,
         items = true,
         itemList = {
-            {name = 'rubber', min = 1, max = 5},
-            {name = 'metalscrap', min = 1, max = 5},
-
+            {name = 'rubber', min = 2, max = 8},
+            {name = 'plastic', min = 4, max = 8},
+            {name = 'copper', min = 5, max = 8},
         }
     },
 }
@@ -42,11 +42,11 @@ local crateOptions = {
         [1] = {
             vector3(-3403.57, 3710.78, -80.62),    vector3(-3385.58, 3710.43, -84.82),    vector3(-3365.83, 3716.45, -91.2),    vector3(-3345.63, 3714.8, -95.78),
             vector3(-3328.87, 3698.88, -96.71),    vector3(-3389.9, 3723.14, -86.58),    vector3(-3410.39, 3739.28, -79.52),
-        },        
+        },
         [2] = {
             vector3(-3177.29, 3017.18, -37.79),    vector3(-3185.25, 3033.48, -38.29),    vector3(-3188.14, 3053.65, -38.19),    vector3(-3177.3, 3051.5, -38.32),
             vector3(-3173.12, 3041.8, -35.82),    vector3(-3165.79, 3008.71, -36.63),    vector3(-3164.02, 3050.48, -32.3),
-        },        
+        },
         [3] = {
             vector3(-916.26, 6645.24, -25.98),    vector3(-902.3, 6632.37, -26.21),    vector3(-916.27, 6607.53, -27.51),    vector3(-872.48, 6602.5, -28.32),
             vector3(-849.78, 6649.24, -21.39),    vector3(-884.39, 6676.81, -25.79),    vector3(-932.11, 6699.05, -32.51),
@@ -54,27 +54,27 @@ local crateOptions = {
         [4] = {
             vector3(-2836.73, -462.16, -13.58),    vector3(-2861.99, -439.92, -24.11),    vector3(-2814.28, -377.3, -30.91),    vector3(-2798.08, -429.93, -35.3),
             vector3(-2819.59, -470.73, -44.73),    vector3(-2826.6, -519.13, -56.44),    vector3(-2820.72, -610.41, -50.37),
-        },        
+        },
         [5] = {
             vector3(3280.17, 6416.57, -41.91),    vector3(3233.12, 6414.51, -37.22),    vector3(3260.18, 6376.98, -25.44),    vector3(3309.99, 6430.98, -44.49),
             vector3(3278.15, 6484.98, -43.11),    vector3(3226.95, 6485.53, -39.96),    vector3(3193.43, 6470.45, -32.13),
-        },        
+        },
         [6] = {
             vector3(3415.53, 6315.46, -50.37),    vector3(3393.36, 6338.17, -50.35),    vector3(3412.38, 6353.98, -55.79),    vector3(3420.1, 6294.81, -47.69),
             vector3(3385.09, 6282.62, -36.32),    vector3(3376.03, 6306.77, -41.48),    vector3(3378.73, 6342.12, -51.32),
-        },        
+        },
         [7] = {
             vector3(3893.63, 3058.47, -22.01),    vector3(3918.02, 3053.14, -22.01),    vector3(3919.13, 3019.82, -29.72),    vector3(3890.67, 3021.22, -28.54),
             vector3(3900.92, 3046.54, -19.08),    vector3(3948.11, 3026.81, -35.26),    vector3(3861.16, 3097.67, -15.15),
-        },        
+        },
         [8] = {
             vector3(3159.35, -338.84, -20.66),    vector3(3144.81, -301.69, -18.46),    vector3(3140.34, -252.11, -18.13),    vector3(3176.05, -243.94, -18.22),
             vector3(3179.15, -288.49, -9.12),    vector3(3218.42, -373.04, -27.45),    vector3(3243.52, -417.78, -39.43),
-        },        
+        },
         [9] = {
             vector3(2680.07, -1431.97, -17.49),     vector3(2713.14, -1411.52, -16.71),    vector3(2711.46, -1370.75, -14.39),    vector3(2681.32, -1353.71, -19.23),
             vector3(2655.77, -1368.25, -17.62),    vector3(2628.66, -1384.49, -12.94),    vector3(2646.28, -1446.14, -17.85)
-        },        
+        },
         [10] = {
             vector3(1751.09, -2983.05, -45.31),    vector3(1717.58, -3024.75, -51.43),    vector3(1759.41, -3057.78, -48.64),    vector3(1808.51, -3076.38, -40.33),
             vector3(1848.39, -3049.72, -39.06),    vector3(1837.9, -3000.39, -44.2),    vector3(1861.03, -2924.65, -37.03)
@@ -100,6 +100,7 @@ local ScubaTank = false
 local Timer = 0
 local anchor = false
 local anchoredboat = nil
+local RegionCheck = false
 
 if Config.ScubaJobOn then
     if Scuba_Options.AnchorBoatCommand then
@@ -148,16 +149,22 @@ if Config.ScubaJobOn then
         print(Config.Lang['scuba_how_to'])
     end)
 
+    RegisterNetEvent('angelicxs-CivilianJobs:Main:ResetJobs', function()
+        ChosenBoat = false
+    end)
+
     RegisterNetEvent('angelicxs-CivilianJobs:ScubaJob:AskForWork', function()
         if FreeWork or PlayerJob == Config.ScubaJobName then
+            if gettingMissionVehicle then TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['getting_vehicle'], Config.LangType['error']) return end
             if not MissionVehicle then
-                local ChosenBoat = Randomizer(Scuba_Options.Boat.Type, 'angelicxs-CivilianJobs:JetskiJob:AskForWork')
-                while not ChosenBoat do Wait(10) end
+                ChosenBoat = Randomizer(Scuba_Options.Boat.Type, 'angelicxs-CivilianJobs:JetskiJob:AskForWork')
                 TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenBoat, Scuba_Options.Boat.Spawn, 'angelicxs-CivilianJobs:ScubaJob:AskForWork')
                 while not DoesEntityExist(MissionVehicle) do
                     Wait(25)
                 end
                 TriggerEvent('angelicxs-CivilianJobs:ScubaJob:BeginWork')
+            elseif GetEntityModel(MissionVehicle) ~= GetHashKey(ChosenBoat) then
+                TriggerEvent('angelicxs-CivilianJobs:Notify', "You must have the proper work vehicle to do this kind of job!", Config.LangType['error'])
             else
                 TriggerEvent('angelicxs-CivilianJobs:ScubaJob:BeginWork')
             end
@@ -169,6 +176,7 @@ if Config.ScubaJobOn then
     RegisterNetEvent('angelicxs-CivilianJobs:ScubaJob:BeginWork', function()
         if Region == nil then
             Region = Randomizer(crateOptions.Location, 'angelicxs-CivilianJobs:ScubaJob:BeginWork')
+            RegionCheck = true
             local area = nil
             local amount = 0
             while Region == nil do Wait(10) end
@@ -178,10 +186,11 @@ if Config.ScubaJobOn then
                 end
                 CreateThread(function()
                     local spot = Region[i]
-                    while true do -- Waits until player is close to spawn items
+                    while true and RegionCheck do -- Waits until player is close to spawn items
                         if #(GetEntityCoords(PlayerPedId()) - spot) <= 120 then break end
-                        Wait(1100)
+                        Wait(0)
                     end
+                    if not RegionCheck then return end
                     Wait(i*250)
                     local crateType = Randomizer(crateOptions.Style, 'angelicxs-CivilianJobs:ScubaJob:BeginWork')
                     while not crateType do Wait(10) end
@@ -209,13 +218,13 @@ if Config.ScubaJobOn then
     function CrateMarker(spot, crateItem)
         if crateOptions.CrateAllowMarker then
             CreateThread(function()
-                while true do 
+                while true do
                     local sleep = 1000
                     local coord = GetEntityCoords(PlayerPedId())
                     if #(coord-spot) < 40 then
                         sleep = 0
                         DrawMarker(crateOptions.CrateLocationMarker, spot.x, spot.y, (spot.z+2), 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 2.0, 2.0, 2.0, 100, 200, 50, 255, true, true, 2, 0.0, false, false, false)
-                        if not DoesEntityExist(crateItem) then 
+                        if not DoesEntityExist(crateItem) then
                             break
                         end
                     end
@@ -251,15 +260,15 @@ if Config.ScubaJobOn then
                                 TriggerEvent('angelicxs-CivilianJobs:ScubaJob:SalvageCrate', crateItem, crateType)
                                 exports[Config.ThirdEyeName]:RemoveZone(tostring(crateItem))
                             end,
-                        },                               
+                        },
                     },
                     distance = 2
-                })       
-            end 
+                })
+            end
         end
         if Config.Use3DText then
             CreateThread(function()
-                while true do 
+                while true do
                     local sleep = 1000
                     local coord = GetEntityCoords(PlayerPedId())
                     if #(coord-spot) < 20 then
@@ -387,6 +396,7 @@ if Config.ScubaJobOn then
         end
         Region = nil
         ScubaMode = false
+        RegionCheck = false
         CrateTable = {}
     end)
 end

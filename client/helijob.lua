@@ -15,15 +15,30 @@ local Heli_Options = {
         name = 'Angelic Air Cargo',
     },
     Heli = {
-        Spawn = vector4(-1178.76, -2846.53, 13.95, 151.0),
+        Spawn = {
+            vector4(-1178.76, -2846.53, 13.95, 151.0),
+            vector4(-1145.75, -2865.18, 13.95, 146.33),
+            
+        },
         Type = {
             'frogger',
-        }
+        },
+        TimeLimit = true, -- If true, will disable the engine of the heli after TIMER length in time (resets when picking up another package)
+        Timer = 10, -- How long in MINUTES until the engine is disabled if TimeLimit = true
     },
     Payment = {
         flatRate = false,
         flatRateAmount = 100,
         DistanceMultiplier = 0.2, -- Only applies if flatRate = false, pays driver based on multiplying distance from pick up to drop off.
+        materialGain = true, -- if true will give every item in the materialList to the player
+        materialList = { -- List of items to give to play when they RECEIVE PAYMENT
+            {name = 'rubber', min = 1, max = 2},
+            {name = 'plastic', min = 1, max = 2},
+            {name = 'metalscrap', min = 1, max = 2},
+            {name = 'copper', min = 1, max = 2},
+            {name = 'iron', min = 1, max = 2},
+            {name = 'steel', min = 1, max = 2},
+        },
     },
 }
 
@@ -75,6 +90,7 @@ local crateOptions = {
 local PedSpawned = false
 local CargoItem = nil
 local heliJob = false
+local heliJobLock = false
 
 if Config.HeliJobOn then
     CreateThread(function()
@@ -101,6 +117,7 @@ if Config.HeliJobOn then
 
     RegisterNetEvent('angelicxs-CivilianJobs:HeliJob:AskForWork', function()
         if FreeWork or PlayerJob == Config.HeliJobName then
+            if gettingMissionVehicle then TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['getting_vehicle'], Config.LangType['error']) return end
             if not MissionVehicle then
                 local ChosenHeli = Randomizer(Heli_Options.Heli.Type, 'angelicxs-CivilianJobs:HeliJob:AskForWork')
                 TriggerEvent('angelicxs-CivilianJobs:MAIN:CreateVehicle', ChosenHeli, Heli_Options.Heli.Spawn, 'angelicxs-CivilianJobs:HeliJob:AskForWork')
@@ -119,7 +136,26 @@ if Config.HeliJobOn then
     RegisterNetEvent('angelicxs-CivilianJobs:HeliJob:BeginWork', function()
         if not DoesEntityExist(CargoItem) then
             heliJob = true
-            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['heli_start'], Config.LangType['info'])
+            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['heli_start'], Config.LangType['info'])      
+            if Heli_Options.Heli.TimeLimit then
+                heliJobLock = false
+                TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['heli_start_timer'], Config.LangType['info'])
+                CreateThread(function()
+                    Wait(2000)
+                    heliJobLock = true
+                    local timer = Heli_Options.Heli.Timer*60
+                    while heliJobLock do
+                        if not heliJobLock or not DoesEntityExist(MissionVehicle) then break end
+                        Wait(1000)
+                        timer = timer -1
+                        if timer <= 0 then 
+                            SetVehicleUndriveable(MissionVehicle, true)
+                            TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['heli_end_timer'], Config.LangType['error'])
+                            break
+                        end
+                    end
+                end)
+            end
             CargoCrateCreator()
         else
             TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['heli_on_job'], Config.LangType['error'])
@@ -180,14 +216,48 @@ if Config.HeliJobOn then
             end
             Wait(sleep)
         end
-        TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, vector3(Heli_Options.Heli.Spawn.x, Heli_Options.Heli.Spawn.y, Heli_Options.Heli.Spawn.z), 'Heli Pad', 'CargoDropLocation()')
         if Heli_Options.Payment.flatRate then
             PaymentFlat(Heli_Options.Payment.flatRateAmount, 'Helicopter Job - CargoDropLocation()')
         else
             DistancePayment(inital, location, 'Helicopter Job - CargoDropLocation()', Heli_Options.Payment.DistanceMultiplier)
         end
+        if Heli_Options.Payment.materialGain then
+            for i = 1, #Heli_Options.Payment.materialList do
+                PaymentItemMaterial(Heli_Options.Payment.materialList[i], 'Helicopter Job - CargoDropLocation()')
+            end
+        end
         heliJob = false
         TriggerEvent('angelicxs-CivilianJobs:Notify', Config.Lang['heli_job_complete'], Config.LangType['success'])
+        if Config.ContinousMode then
+            local headerName = Config.Lang['continous_mode_header']
+            local options = {
+                {
+                    header = Config.Lang['continous_mode_yes'], -- nh / qbmenu
+                    event = 'angelicxs-CivilianJobs:HeliJob:BeginWork', -- nh
+                    params = { -- qb menu
+                        event = 'angelicxs-CivilianJobs:HeliJob:BeginWork',
+                    },
+                    title = Config.Lang['continous_mode_yes'], -- oxlibs
+                    onSelect = function() -- oxlibs
+                        TriggerEvent("angelicxs-CivilianJobs:HeliJob:BeginWork")
+                    end,
+                },
+                {
+                    header = Config.Lang['continous_mode_no'], -- nh / qbmenu
+                    event = 'angelicxs-CivilianJobs:MAIN:NoContinueMode', -- nh
+                    params = { -- qb menu
+                        event = 'angelicxs-CivilianJobs:MAIN:NoContinueMode',
+                    },
+                    title = Config.Lang['continous_mode_no'], -- oxlibs
+                    onSelect = function() -- oxlibs
+                        TriggerEvent("angelicxs-CivilianJobs:MAIN:NoContinueMode")
+                    end,
+                },
+            }
+            jobMainMenu(headerName, options)
+        else
+            TriggerEvent('angelicxs-CivilianJobs:MAIN:RouteMarker', false, vector3(Heli_Options.Heli.Spawn.x, Heli_Options.Heli.Spawn.y, Heli_Options.Heli.Spawn.z), 'Heli Pad', 'CargoDropLocation()')
+        end
     end
 
     AddEventHandler('angelicxs-CivilianJobs:Main:ResetJobs', function()
